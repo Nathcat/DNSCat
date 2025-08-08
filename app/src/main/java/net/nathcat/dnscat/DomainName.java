@@ -66,7 +66,7 @@ public class DomainName {
         while (n[0] != 0) {
             byte[] c = new byte[n[0]];
             in.read(c);
-            name.append(new String(c, Charsets.US_ASCII));
+            name.append(new String(c, Charsets.US_ASCII) + ".");
 
             in.read(n);
         }
