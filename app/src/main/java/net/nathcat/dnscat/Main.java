@@ -51,7 +51,7 @@ public class Main {
                 e.printStackTrace();
 
                 byte[] reply = new Message(new Header(
-                    (short) Math.random(), true, Header.Opcode.QUERY, true, false, false, false, Header.RCode.NOTIMPLEMENTED
+                    e.id, true, Header.Opcode.QUERY, true, false, false, false, Header.RCode.NOTIMPLEMENTED
                 ), new Question[0], new RR[0], new RR[0], new RR[0]).getBytes();
 
                 DatagramPacket replyPacket = new DatagramPacket(reply, 0, reply.length, packet.getAddress(), packet.getPort());

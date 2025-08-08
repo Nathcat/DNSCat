@@ -78,21 +78,27 @@ public class Header {
     public Header(InputStream in) throws IOException, InvalidCodeException {
         DataInputStream dis = new DataInputStream(in);
         id = dis.readShort();
-        
-        byte[] B = new byte[1];
-        byte b;
-        dis.read(B);
-        b = B[0];
-        isResponse = (b >> 7) == 1;
-        opcode = Opcode.fromCode((byte) ((b >> 3) & 0b111));
-        authoritative = ((b >> 2) & 1) == 1;
-        truncated = ((b >> 1) & 1) == 1;
-        recursionDesired = (b & 1) == 1;
-        
-        dis.read(B);
-        b = B[0];
-        recursionAvailable = (b >> 7) == 1;
-        rcode = RCode.fromCode((byte) (b & 0b1111));
+
+        try {
+            byte[] B = new byte[1];
+            byte b;
+            dis.read(B);
+            b = B[0];
+            isResponse = (b >> 7) == 1;
+            opcode = Opcode.fromCode((byte) ((b >> 3) & 0b111));
+            authoritative = ((b >> 2) & 1) == 1;
+            truncated = ((b >> 1) & 1) == 1;
+            recursionDesired = (b & 1) == 1;
+            
+            dis.read(B);
+            b = B[0];
+            recursionAvailable = (b >> 7) == 1;
+            rcode = RCode.fromCode((byte) (b & 0b1111));
+        }
+        catch (InvalidCodeException e) {
+            e.id = id;
+            throw e;
+        }
     }
 
     @Override

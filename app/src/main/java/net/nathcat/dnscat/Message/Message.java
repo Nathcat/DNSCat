@@ -1,5 +1,6 @@
 package net.nathcat.dnscat.Message;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -27,53 +28,60 @@ public class Message {
 
     public Message(InputStream in) throws IOException, InvalidCodeException {
         header = new Header(in);
-        DataInputStream dis = new DataInputStream(in);
-        short qd = dis.readShort();  // Question count
-        short an = dis.readShort();  // Answer count
-        short ns = dis.readShort();  // Authority count
-        short ad = dis.readShort();  // Additional count
-
-        questions = Question.readQuestions(qd, dis);
         
-        answers = new RR[an];
-        for (int i = 0; i < an; i++) {
-            answers[i] = new RR.Builder()
-                .domainName(DomainName.fromLabels(dis))
-                .type(dis.readShort())
-                .cls(dis.readShort())
-                .ttl(dis.readInt())
-                .build(dis);
-        }
+        try {
+            DataInputStream dis = new DataInputStream(in);
+            short qd = dis.readShort();  // Question count
+            short an = dis.readShort();  // Answer count
+            short ns = dis.readShort();  // Authority count
+            short ad = dis.readShort();  // Additional count
 
-        authorities = new RR[ns];
-        for (int i = 0; i < ns; i++) {
-            authorities[i] = new RR.Builder()
-                .domainName(DomainName.fromLabels(dis))
-                .type(dis.readShort())
-                .cls(dis.readShort())
-                .ttl(dis.readInt())
-                .build(dis);
-        }
+            questions = Question.readQuestions(qd, dis);
+            
+            answers = new RR[an];
+            for (int i = 0; i < an; i++) {
+                answers[i] = new RR.Builder()
+                    .domainName(DomainName.fromLabels(dis))
+                    .type(dis.readShort())
+                    .cls(dis.readShort())
+                    .ttl(dis.readInt())
+                    .build(dis);
+            }
 
-        additional = new RR[ad];
-        for (int i = 0; i < ad; i++) {
-            additional[i] = new RR.Builder()
-                .domainName(DomainName.fromLabels(dis))
-                .type(dis.readShort())
-                .cls(dis.readShort())
-                .ttl(dis.readInt())
-                .build(dis);
+            authorities = new RR[ns];
+            for (int i = 0; i < ns; i++) {
+                authorities[i] = new RR.Builder()
+                    .domainName(DomainName.fromLabels(dis))
+                    .type(dis.readShort())
+                    .cls(dis.readShort())
+                    .ttl(dis.readInt())
+                    .build(dis);
+            }
+
+            additional = new RR[ad];
+            for (int i = 0; i < ad; i++) {
+                additional[i] = new RR.Builder()
+                    .domainName(DomainName.fromLabels(dis))
+                    .type(dis.readShort())
+                    .cls(dis.readShort())
+                    .ttl(dis.readInt())
+                    .build(dis);
+            }
+        }
+        catch (InvalidCodeException e) {
+            e.id = header.id;
+            throw e;
         }
     }
 
     @Override
     public String toString() {
-        return "----- DNS MESSAGE -----\n" 
-            + header
-            + "\n\n\tQuestion count: " + questions.length
-            + "\n\tAnswer RR count: " + answers.length
-            + "\n\tNameserver RR count: " + authorities.length
-            + "\n\tAdditional RR count: " + additional.length;
+        return "----- DNS MESSAGE -----\n"
+                + header
+                + "\n\n\tQuestion count: " + questions.length
+                + "\n\tAnswer RR count: " + answers.length
+                + "\n\tNameserver RR count: " + authorities.length
+                + "\n\tAdditional RR count: " + additional.length;
     }
 
     public byte[] getBytes() {
@@ -106,8 +114,7 @@ public class Message {
             dos.flush();
 
             return baos.toByteArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
