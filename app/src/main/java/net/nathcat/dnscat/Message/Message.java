@@ -81,7 +81,7 @@ public class Message {
                 + "\n\n\tQuestion count: " + questions.length
                 + "\n\tAnswer RR count: " + answers.length
                 + "\n\tNameserver RR count: " + authorities.length
-                + "\n\tAdditional RR count: " + additional.length);
+                + "\n\tAdditional RR count: " + additional.length + "\n");
 
         s.append("----- Questions\n");
         for (Question q : questions) { s.append(q.toString() + "\n"); }
