@@ -22,6 +22,8 @@ public class MX extends RR {
         super(name, cls, ttl);
         DataInputStream dis = new DataInputStream(rdata);
         try {
+            byte[] rdlength = new byte[2];
+            dis.read(rdlength); 
             preference = dis.readShort();
             exchange = DomainName.fromLabels(dis);
         }

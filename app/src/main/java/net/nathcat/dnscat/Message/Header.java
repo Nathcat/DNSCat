@@ -91,4 +91,16 @@ public class Header {
         recursionAvailable = (b >> 7) == 1;
         rcode = RCode.fromCode((byte) (b & 0b1111));
     }
+
+    @Override
+    public String toString() {
+        return "DNS Message Header:\n\tID: " + id 
+            + "\n\tisResponse: " + isResponse 
+            + "\n\topcode: " + opcode 
+            + "\n\tAuthoritative: " + authoritative 
+            + "\n\tTruncated: " + truncated
+            + "\n\trecursionDesired: " + recursionDesired
+            + "\n\trecursionAvailable: " + recursionAvailable
+            + "\n\trcode: " + rcode;  
+    }
 }

@@ -1,15 +1,25 @@
 package net.nathcat.dnscat;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        DomainName dn = new DomainName("ddns.nathcat.net");
+        DatagramSocket socket = new DatagramSocket(53);
+        byte[] buffer = new byte[1024];
 
-        FileOutputStream fos = new FileOutputStream("test.bin");
-        fos.write(dn.toLabels());
-        fos.flush();
-        fos.close();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                System.out.println("Shutting down!");
+                socket.close();
+            }
+        });
+
+        while (true) {
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            
+            System.out.println("Got datagram from " + packet.getAddress().getHostAddress() + " on port " + packet.getPort());
+        }
     }
 }

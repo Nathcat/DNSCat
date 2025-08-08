@@ -16,7 +16,9 @@ public class A extends RR {
     }
 
     public A(DomainName name, RR.Class cls, int ttl, InputStream rdata) throws UnknownHostException, IOException {
-        super(name, cls, ttl);        
+        super(name, cls, ttl);
+        byte[] rdlength = new byte[2];
+        rdata.read(rdlength);   
         byte[] addr = new byte[4];
         rdata.read(addr);
         address = InetAddress.getByAddress(addr);

@@ -15,6 +15,8 @@ public class CNAME extends RR {
 
     public CNAME(DomainName name, RR.Class cls, int ttl, InputStream rdata) throws IOException {
         super(name, cls, ttl);
+        byte[] rdlength = new byte[2];
+        rdata.read(rdlength); 
         alias = DomainName.fromLabels(rdata);
     }
 

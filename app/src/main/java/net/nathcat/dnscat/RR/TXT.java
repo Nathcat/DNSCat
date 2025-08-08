@@ -1,5 +1,6 @@
 package net.nathcat.dnscat.RR;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -15,8 +16,10 @@ public class TXT extends RR {
         this.data = data;
     }
 
-    public TXT(DomainName name, RR.Class cls, int ttl, InputStream rdata) {
+    public TXT(DomainName name, RR.Class cls, int ttl, InputStream rdata) throws IOException {
         super(name, cls, ttl);
+        byte[] rdlength = new byte[2];
+        rdata.read(rdlength); 
         try (Scanner s = new Scanner(rdata)) {
             this.data = new String(s.nextLine().getBytes(Charsets.US_ASCII), Charsets.US_ASCII);  // Help
         }
