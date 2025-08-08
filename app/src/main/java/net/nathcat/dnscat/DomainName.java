@@ -71,6 +71,6 @@ public class DomainName {
             in.read(n);
         }
 
-        return new DomainName(in.toString());
+        return new DomainName(name.toString());
     }
 }
