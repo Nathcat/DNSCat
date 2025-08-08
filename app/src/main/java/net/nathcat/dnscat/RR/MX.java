@@ -54,6 +54,11 @@ public class MX extends RR {
     }
 
     @Override
+    public String toString() {
+        return "MX -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + preference + " -- " + exchange.name;  
+    }
+
+    @Override
     public byte[] getBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);

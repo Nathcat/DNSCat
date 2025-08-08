@@ -102,4 +102,9 @@ public class Question {
 
         return q;
     }
+
+    @Override
+    public String toString() {
+        return "Question -- " + name.name + " -- " + type + " -- " + cls;
+    }
 }

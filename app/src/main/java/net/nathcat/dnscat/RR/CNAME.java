@@ -33,6 +33,11 @@ public class CNAME extends RR {
     }
 
     @Override
+    public String toString() {
+        return "CNAME -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + alias.name;  
+    }
+
+    @Override
     public byte[] getBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);

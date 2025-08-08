@@ -39,6 +39,11 @@ public class TXT extends RR {
     }
     
     @Override
+    public String toString() {
+        return "TXT -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + data;  
+    }
+
+    @Override
     public byte[] getBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);

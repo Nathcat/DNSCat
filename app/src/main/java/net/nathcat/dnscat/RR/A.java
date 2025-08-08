@@ -39,6 +39,11 @@ public class A extends RR {
     }
 
     @Override
+    public String toString() {
+        return "A -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + address.getHostAddress();  
+    }
+
+    @Override
     public byte[] getBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);

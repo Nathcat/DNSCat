@@ -35,6 +35,8 @@ public class Main {
             try {
                 msg = new Message(new ByteArrayInputStream(data));
                 
+                System.out.println(msg);
+
                 byte[] reply = new Message(new Header(
                     msg.header.id, true, Header.Opcode.QUERY, true, false, false, false, Header.RCode.NAMEERROR
                 ), new Question[0], new RR[0], new RR[0], new RR[0]).getBytes();

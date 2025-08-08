@@ -105,6 +105,11 @@ public abstract class RR {
     abstract public byte[] rdata();
     abstract public short type();
 
+    @Override
+    public String toString() {
+        return "RR -- " + name.name + " -- " + cls + " -- " + ttl;  
+    }
+
     public byte[] getBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);

@@ -76,12 +76,23 @@ public class Message {
 
     @Override
     public String toString() {
-        return "----- DNS MESSAGE -----\n"
+        StringBuilder s = new StringBuilder("----- DNS MESSAGE -----\n"
                 + header
                 + "\n\n\tQuestion count: " + questions.length
                 + "\n\tAnswer RR count: " + answers.length
                 + "\n\tNameserver RR count: " + authorities.length
-                + "\n\tAdditional RR count: " + additional.length;
+                + "\n\tAdditional RR count: " + additional.length);
+
+        s.append("----- Questions\n");
+        for (Question q : questions) { s.append(q.toString() + "\n"); }
+        s.append("----- Answers\n");
+        for (RR r : answers) { s.append(r.toString() + "\n"); }
+        s.append("----- Authoritative name servers\n");
+        for (RR r : authorities) { s.append(r.toString() + "\n"); }
+        s.append("----- Additional records\n");
+        for (RR r : additional) { s.append(r.toString() + "\n"); }
+        
+        return s.toString();
     }
 
     public byte[] getBytes() {
