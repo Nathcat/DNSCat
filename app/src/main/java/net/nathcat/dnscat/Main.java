@@ -33,12 +33,9 @@ public class Main {
             FileOutputStream fos = new FileOutputStream("test.bin");
             fos.write(data);
             fos.close();
-
-            Header h = new Header(new ByteArrayInputStream(data));
-            System.out.println(h);
             
-            // Message msg = new Message(new ByteArrayInputStream(data));
-            // System.out.println(msg);
+            Message msg = new Message(new ByteArrayInputStream(data));
+            System.out.println(msg);
         }
     }
 }
