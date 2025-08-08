@@ -1,5 +1,9 @@
 package net.nathcat.dnscat.RR;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOError;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
@@ -100,4 +104,22 @@ public abstract class RR {
 
     abstract public byte[] rdata();
     abstract public short type();
+
+    public byte[] getBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+
+        try {
+            dos.write(name.toLabels());
+            dos.writeShort(type());
+            dos.writeShort(cls.code);
+            dos.writeInt(ttl);
+            dos.flush();
+
+            return baos.toByteArray();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

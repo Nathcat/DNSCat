@@ -52,5 +52,25 @@ public class MX extends RR {
     public short type() {
         return (short) 15;
     }
+
+    @Override
+    public byte[] getBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+
+        try {
+            dos.write(super.getBytes());
+            byte[] n = exchange.toLabels();
+            dos.writeShort(2 + n.length);
+            dos.writeShort(preference);
+            dos.write(n);
+            dos.flush();
+
+            return baos.toByteArray();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     
 }

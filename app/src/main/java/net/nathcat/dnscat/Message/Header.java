@@ -1,6 +1,8 @@
 package net.nathcat.dnscat.Message;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -103,5 +105,28 @@ public class Header {
             + "\n\trecursionDesired: " + recursionDesired
             + "\n\trecursionAvailable: " + recursionAvailable
             + "\n\trcode: " + rcode;  
+    }
+
+    public byte[] getBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+
+        try {
+            dos.writeShort(id);
+            short flags = 0;
+            flags |= (isResponse ? 1 : 0) << 15;
+            flags |= (opcode.code & 0xF) << 11;
+            flags |= (authoritative ? 1 : 0) << 10;
+            flags |= (truncated ? 1 : 0) << 9;
+            flags |= (recursionDesired ? 1 : 0) << 8;
+            flags |= (recursionAvailable ? 1 : 0) << 7;
+            flags |= rcode.code & 0xF;
+            dos.writeShort(flags);
+
+            dos.flush();
+            return baos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package net.nathcat.dnscat.RR;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,6 +30,25 @@ public class CNAME extends RR {
     @Override
     public short type() {
         return (short) 5;
+    }
+
+    @Override
+    public byte[] getBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+
+        try {
+            dos.write(super.getBytes());
+            byte[] n = alias.toLabels();
+            dos.writeShort(n.length);
+            dos.write(n);
+            dos.flush();
+
+            return baos.toByteArray();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
 }

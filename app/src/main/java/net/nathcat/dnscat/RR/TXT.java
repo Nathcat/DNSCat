@@ -1,5 +1,8 @@
 package net.nathcat.dnscat.RR;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -35,4 +38,22 @@ public class TXT extends RR {
         return (short) 16;
     }
     
+    @Override
+    public byte[] getBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+
+        try {
+            dos.write(super.getBytes());
+            byte[] n = data.getBytes(Charsets.US_ASCII);
+            dos.writeShort(n.length);
+            dos.write(n);
+            dos.flush();
+
+            return baos.toByteArray();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

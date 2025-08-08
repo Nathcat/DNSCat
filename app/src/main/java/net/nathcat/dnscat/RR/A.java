@@ -1,5 +1,8 @@
 package net.nathcat.dnscat.RR;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -17,9 +20,10 @@ public class A extends RR {
 
     public A(DomainName name, RR.Class cls, int ttl, InputStream rdata) throws UnknownHostException, IOException {
         super(name, cls, ttl);
-        byte[] rdlength = new byte[2];
-        rdata.read(rdlength);   
-        byte[] addr = new byte[4];
+        
+        DataInputStream dis = new DataInputStream(rdata);
+        short rdlength = dis.readShort();
+        byte[] addr = new byte[rdlength];
         rdata.read(addr);
         address = InetAddress.getByAddress(addr);
     }
@@ -32,6 +36,23 @@ public class A extends RR {
     @Override
     public short type() {
         return (short) 1;
+    }
+
+    @Override
+    public byte[] getBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+
+        try {
+            dos.write(super.getBytes());
+            dos.writeShort(address.getAddress().length);
+            dos.write(address.getAddress());
+            dos.flush();
+
+            return baos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
 }

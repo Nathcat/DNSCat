@@ -1,6 +1,8 @@
 package net.nathcat.dnscat.Message;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -72,5 +74,41 @@ public class Message {
             + "\n\tAnswer RR count: " + answers.length
             + "\n\tNameserver RR count: " + authorities.length
             + "\n\tAdditional RR count: " + additional.length;
+    }
+
+    public byte[] getBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+
+        try {
+            dos.write(header.getBytes());
+            dos.writeShort(questions.length);
+            dos.writeShort(answers.length);
+            dos.writeShort(authorities.length);
+            dos.writeShort(additional.length);
+
+            for (Question q : questions) {
+                dos.write(q.getBytes());
+            }
+
+            for (RR r : answers) {
+                dos.write(r.getBytes());
+            }
+
+            for (RR r : authorities) {
+                dos.write(r.getBytes());
+            }
+
+            for (RR r : additional) {
+                dos.write(r.getBytes());
+            }
+
+            dos.flush();
+
+            return baos.toByteArray();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
