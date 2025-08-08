@@ -1,11 +1,13 @@
 package net.nathcat.dnscat;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
 
+import net.nathcat.dnscat.Message.Header;
 import net.nathcat.dnscat.Message.Message;
 
 public class Main {
@@ -27,9 +29,16 @@ public class Main {
             byte[] data = new byte[packet.getLength()];
             System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
             System.out.println("Got datagram from " + packet.getAddress().getHostAddress() + " on port " + packet.getPort());
-            System.out.println(Arrays.toString(data));
-            Message msg = new Message(new ByteArrayInputStream(data));
-            System.out.println(msg);
+
+            FileOutputStream fos = new FileOutputStream("test.bin");
+            fos.write(data);
+            fos.close();
+
+            Header h = new Header(new ByteArrayInputStream(data));
+            System.out.println(h);
+            
+            // Message msg = new Message(new ByteArrayInputStream(data));
+            // System.out.println(msg);
         }
     }
 }
