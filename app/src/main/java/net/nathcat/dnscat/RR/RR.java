@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
 import net.nathcat.dnscat.DomainName;
+import net.nathcat.dnscat.exceptions.InvalidCodeException;
 
 public abstract class RR {
 
@@ -15,7 +16,7 @@ public abstract class RR {
 
         public Builder domainName(DomainName name) { this.name = name;  return this; }
         public Builder cls(RR.Class cls) { this.cls = cls;  return this; }
-        public Builder cls(short code) { cls(Class.fromCode(code));  return this; }
+        public Builder cls(short code) throws InvalidCodeException { cls(Class.fromCode(code));  return this; }
         public Builder ttl(int ttl) { this.ttl = ttl;  return this; }
         public Builder type(java.lang.Class<? extends RR> type) { this.type = type;  return this; }
 
@@ -30,7 +31,7 @@ public abstract class RR {
             throw new IllegalArgumentException("Provided type not implemented!");
         }
 
-        public Builder type(short code) {
+        public Builder type(short code) throws InvalidCodeException {
             type(Type.fromCode(code));
             return this;
         }
@@ -54,14 +55,14 @@ public abstract class RR {
 
         private Class(short code) { this.code = code; }
 
-        public static RR.Class fromCode(short code) {
+        public static RR.Class fromCode(short code) throws InvalidCodeException {
             switch (code) {
                 case 1: return IN;
                 case 3: return CS;
                 case 4: return HS;
             }
 
-            throw new IllegalArgumentException("Code " + code + " not recognised as class code!");
+            throw new InvalidCodeException("Code " + code + " not recognised as class code!");
         }
     }
 
@@ -75,7 +76,7 @@ public abstract class RR {
 
         private Type(short code) { this.code = code; }
 
-        public static RR.Type fromCode(short code) {
+        public static RR.Type fromCode(short code) throws InvalidCodeException {
             switch (code) {
                 case 1: return A;
                 case 5: return CNAME;
@@ -83,7 +84,7 @@ public abstract class RR {
                 case 16: return TXT;
             }
 
-            throw new IllegalArgumentException("Code " + code + " not recognised as class code!");
+            throw new InvalidCodeException("Code " + code + " not recognised as class code!");
         }
     }
 

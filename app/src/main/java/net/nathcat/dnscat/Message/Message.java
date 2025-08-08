@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import net.nathcat.dnscat.DomainName;
 import net.nathcat.dnscat.RR.RR;
+import net.nathcat.dnscat.exceptions.InvalidCodeException;
 
 public class Message {
     public Header header;
@@ -22,7 +23,7 @@ public class Message {
         this.additional = additional;
     }
 
-    public Message(InputStream in) throws IOException {
+    public Message(InputStream in) throws IOException, InvalidCodeException {
         header = new Header(in);
         DataInputStream dis = new DataInputStream(in);
         short qd = dis.readShort();  // Question count

@@ -3,7 +3,8 @@ package net.nathcat.dnscat.Message;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.DataFormatException;
+
+import net.nathcat.dnscat.exceptions.InvalidCodeException;
 
 public class Header {
     public enum Opcode {
@@ -15,14 +16,14 @@ public class Header {
 
         private Opcode(byte code) { this.code = code; }
 
-        public static Opcode fromCode(byte code) {
+        public static Opcode fromCode(byte code) throws InvalidCodeException {
             switch (code) {
                 case 0: return QUERY;
                 case 1: return IQUERY;
                 case 2: return STATUS;
             }
 
-            throw new IllegalArgumentException("The code " + code + " is not recognised as an opcode!");
+            throw new InvalidCodeException("The code " + code + " is not recognised as an opcode!");
         }
     }
 
@@ -38,7 +39,7 @@ public class Header {
 
         private RCode(byte code) { this.code = code; }
 
-        public static RCode fromCode(byte code) {
+        public static RCode fromCode(byte code) throws InvalidCodeException {
             switch (code) {
                 case 0: return NOERROR;
                 case 1: return FORMATERROR;
@@ -48,7 +49,7 @@ public class Header {
                 case 5: return REFUSED;
             }
 
-            throw new IllegalArgumentException("The code " + code + " is not recognised as a response code!");
+            throw new InvalidCodeException("The code " + code + " is not recognised as a response code!");
         }
     }
 
@@ -72,7 +73,7 @@ public class Header {
         this.rcode = rcode;
     }
 
-    public Header(InputStream in) throws IOException {
+    public Header(InputStream in) throws IOException, InvalidCodeException {
         DataInputStream dis = new DataInputStream(in);
         id = dis.readShort();
         

@@ -5,8 +5,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidAlgorithmParameterException;
 
 import net.nathcat.dnscat.DomainName;
+import net.nathcat.dnscat.exceptions.InvalidCodeException;
 
 public class Question {
     public enum QType {
@@ -22,7 +24,7 @@ public class Question {
 
         private QType(short code) { this.code = code; }
 
-        public static QType fromCode(short code) {
+        public static QType fromCode(short code) throws InvalidCodeException {
             switch (code) {
                 case 1: return A;
                 case 5: return CNAME;
@@ -33,7 +35,7 @@ public class Question {
                 case 255: return ALL;
             }
 
-            throw new IllegalArgumentException("Code " + code + " not recognised as type code!");
+            throw new InvalidCodeException("Code " + code + " not recognised as type code!");
         }
     }
 
@@ -69,7 +71,7 @@ public class Question {
         this.cls = cls;
     }
 
-    public Question(InputStream in) throws IOException {
+    public Question(InputStream in) throws IOException, InvalidCodeException {
         this.name = DomainName.fromLabels(in);
         
         DataInputStream dis = new DataInputStream(in);
@@ -93,7 +95,7 @@ public class Question {
         }
     }
 
-    public static Question[] readQuestions(int questionCount, InputStream in) throws IOException {
+    public static Question[] readQuestions(int questionCount, InputStream in) throws IOException, InvalidCodeException {
         Question[] q = new Question[questionCount];
 
         for (int i = 0; i < questionCount; i++) q[i] = new Question(in);
