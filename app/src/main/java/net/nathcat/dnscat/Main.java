@@ -18,6 +18,7 @@ public class Main {
 
         while (true) {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet);
             
             System.out.println("Got datagram from " + packet.getAddress().getHostAddress() + " on port " + packet.getPort());
         }
