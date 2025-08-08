@@ -43,11 +43,13 @@ public class Main {
                 replyPacket.setAddress(packet.getAddress());
                 replyPacket.setPort(packet.getPort());
                 socket.send(replyPacket);
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
 
             } catch (InvalidCodeException e) {
+                e.printStackTrace();
+
                 byte[] reply = new Message(new Header(
                     (short) Math.random(), true, Header.Opcode.QUERY, true, false, false, false, Header.RCode.NOTIMPLEMENTED
                 ), new Question[0], new RR[0], new RR[0], new RR[0]).getBytes();
