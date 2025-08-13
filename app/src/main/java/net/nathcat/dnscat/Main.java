@@ -41,7 +41,7 @@ public class Main {
                 RR[] answer = new RR[0];
                 Header.RCode rcode = Header.RCode.NAMEERROR;
 
-                if (msg.questions[0].name.name().equals(DomainName.origin.name())) {
+                if (msg.questions[0].name.name().toLowerCase().equals("test.nathcat.net")) {
                     answer = new RR[] {
                         new net.nathcat.dnscat.RR.A(new DomainName("test.nathcat.net"), RR.Class.IN, 0, InetAddress.getByName("3.8.122.52"))
                     };
@@ -54,7 +54,7 @@ public class Main {
                 ), new Question[0], answer, new RR[0], new RR[0]);
 
                 System.out.println("Replying with:\n" + rply.toString());
-                
+
                 byte[] reply = rply.getBytes();
 
                 DatagramPacket replyPacket = new DatagramPacket(reply, 0, reply.length, packet.getAddress(), packet.getPort());
