@@ -5,9 +5,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidAlgorithmParameterException;
+import java.io.OutputStream;
+import java.util.HashMap;
 
 import net.nathcat.dnscat.DomainName;
+import net.nathcat.dnscat.DomainNamePointer;
 import net.nathcat.dnscat.exceptions.InvalidCodeException;
 
 public class Question {
@@ -79,20 +81,12 @@ public class Question {
         cls = QClass.fromCode(dis.readShort());
     }
 
-    public byte[] getBytes() {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(name.toLabels());
-            DataOutputStream dos = new DataOutputStream(baos);
-            dos.writeShort(type.code);
-            dos.writeShort(cls.code);
-            dos.flush();
-
-            return baos.toByteArray();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void write(ByteArrayOutputStream os, HashMap<String, Short> compressionTable) throws IOException {
+        DataOutputStream dos = new DataOutputStream(os);
+        os.write(name.toLabels(compressionTable, (short) os.size()));
+        dos.writeShort(type.code);
+        dos.writeShort(cls.code);
+        dos.flush();
     }
 
     public static Question[] readQuestions(int questionCount, InputStream in) throws IOException, InvalidCodeException {
@@ -105,6 +99,6 @@ public class Question {
 
     @Override
     public String toString() {
-        return "Question -- " + name.name + " -- " + type + " -- " + cls;
+        return "Question -- " + name.name() + " -- " + type + " -- " + cls;
     }
 }

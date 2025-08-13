@@ -4,8 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import net.nathcat.dnscat.DomainName;
+import net.nathcat.dnscat.DomainNamePointer;
 
 public class CNAME extends RR {
     public DomainName alias;
@@ -24,7 +26,7 @@ public class CNAME extends RR {
 
     @Override
     public byte[] rdata() {
-        return alias.toLabels();
+        return alias.toLabels(null, (short) 0);
     }
 
     @Override
@@ -34,26 +36,17 @@ public class CNAME extends RR {
 
     @Override
     public String toString() {
-        return "CNAME -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + alias.name;  
+        return "CNAME -- " + name.name() + " -- " + cls + " -- " + ttl + " -- " + alias.name();  
     }
 
     @Override
-    public byte[] getBytes() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public void write(ByteArrayOutputStream baos, HashMap<String, Short> compressionTable) throws IOException {
+        super.write(baos, compressionTable);
         DataOutputStream dos = new DataOutputStream(baos);
-
-        try {
-            dos.write(super.getBytes());
-            byte[] n = alias.toLabels();
-            dos.writeShort(n.length);
-            dos.write(n);
-            dos.flush();
-
-            return baos.toByteArray();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        byte[] n = alias.toLabels(compressionTable, (short) baos.size());
+        dos.writeShort(n.length);
+        dos.flush();
+        baos.write(n);
     }
     
 }

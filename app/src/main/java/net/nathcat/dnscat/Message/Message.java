@@ -1,13 +1,14 @@
 package net.nathcat.dnscat.Message;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import net.nathcat.dnscat.DomainName;
+import net.nathcat.dnscat.DomainNamePointer;
 import net.nathcat.dnscat.RR.RR;
 import net.nathcat.dnscat.exceptions.InvalidCodeException;
 
@@ -72,6 +73,34 @@ public class Message {
             e.id = header.id;
             throw e;
         }
+
+        decompress();
+    }
+
+    private void decompress() throws IOException {
+        for (Question q : questions) {
+            if (DomainNamePointer.class.isInstance(q.name)) {
+                q.name = ((DomainNamePointer) q.name).resolve(this);
+            }
+        }
+
+        for (RR r : answers) {
+            if (DomainNamePointer.class.isInstance(r.name)) {
+                r.name = ((DomainNamePointer) r.name).resolve(this);
+            }
+        }
+
+        for (RR r : authorities) {
+            if (DomainNamePointer.class.isInstance(r.name)) {
+                r.name = ((DomainNamePointer) r.name).resolve(this);
+            }
+        }
+
+        for (RR r : additional) {
+            if (DomainNamePointer.class.isInstance(r.name)) {
+                r.name = ((DomainNamePointer) r.name).resolve(this);
+            }
+        }
     }
 
     @Override
@@ -98,6 +127,7 @@ public class Message {
     public byte[] getBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
+        HashMap<String, Short> compressionTable = new HashMap<>();
 
         try {
             dos.write(header.getBytes());
@@ -105,21 +135,22 @@ public class Message {
             dos.writeShort(answers.length);
             dos.writeShort(authorities.length);
             dos.writeShort(additional.length);
+            dos.flush();
 
             for (Question q : questions) {
-                dos.write(q.getBytes());
+                q.write(baos, compressionTable);
             }
 
             for (RR r : answers) {
-                dos.write(r.getBytes());
+                r.write(baos, compressionTable);
             }
 
             for (RR r : authorities) {
-                dos.write(r.getBytes());
+                r.write(baos, compressionTable);
             }
 
             for (RR r : additional) {
-                dos.write(r.getBytes());
+                r.write(baos, compressionTable);
             }
 
             dos.flush();

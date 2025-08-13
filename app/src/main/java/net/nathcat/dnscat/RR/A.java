@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import net.nathcat.dnscat.DomainName;
 
@@ -40,24 +41,16 @@ public class A extends RR {
 
     @Override
     public String toString() {
-        return "A -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + address.getHostAddress();  
+        return "A -- " + name.name() + " -- " + cls + " -- " + ttl + " -- " + address.getHostAddress();  
     }
 
     @Override
-    public byte[] getBytes() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public void write(ByteArrayOutputStream baos, HashMap<String, Short> compressionTable) throws IOException {
+        super.write(baos, compressionTable);
         DataOutputStream dos = new DataOutputStream(baos);
-
-        try {
-            dos.write(super.getBytes());
-            dos.writeShort(address.getAddress().length);
-            dos.write(address.getAddress());
-            dos.flush();
-
-            return baos.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        dos.writeShort(address.getAddress().length);
+        dos.flush();
+        baos.write(address.getAddress());
     }
     
 }

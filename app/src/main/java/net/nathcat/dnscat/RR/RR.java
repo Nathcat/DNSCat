@@ -5,9 +5,12 @@ import java.io.DataOutputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 
 import net.nathcat.dnscat.DomainName;
+import net.nathcat.dnscat.DomainNamePointer;
 import net.nathcat.dnscat.exceptions.InvalidCodeException;
 
 public abstract class RR {
@@ -107,24 +110,15 @@ public abstract class RR {
 
     @Override
     public String toString() {
-        return "RR -- " + name.name + " -- " + cls + " -- " + ttl;  
+        return "RR -- " + name.name() + " -- " + cls + " -- " + ttl;  
     }
 
-    public byte[] getBytes() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public void write(ByteArrayOutputStream baos, HashMap<String, Short> compressionTable) throws IOException {
+        baos.write(name.toLabels(compressionTable, (short) baos.size()));
         DataOutputStream dos = new DataOutputStream(baos);
-
-        try {
-            dos.write(name.toLabels());
-            dos.writeShort(type());
-            dos.writeShort(cls.code);
-            dos.writeInt(ttl);
-            dos.flush();
-
-            return baos.toByteArray();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        dos.writeShort(type());
+        dos.writeShort(cls.code);
+        dos.writeInt(ttl);
+        dos.flush();
     }
 }

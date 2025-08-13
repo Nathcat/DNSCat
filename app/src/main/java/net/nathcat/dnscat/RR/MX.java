@@ -5,8 +5,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import net.nathcat.dnscat.DomainName;
+import net.nathcat.dnscat.DomainNamePointer;
 
 public class MX extends RR {
     public short preference;
@@ -39,7 +41,7 @@ public class MX extends RR {
 
         try {
             dos.writeShort(preference);
-            dos.write(exchange.toLabels());
+            dos.write(exchange.toLabels(null, (short) 0));
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -55,27 +57,18 @@ public class MX extends RR {
 
     @Override
     public String toString() {
-        return "MX -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + preference + " -- " + exchange.name;  
+        return "MX -- " + name.name() + " -- " + cls + " -- " + ttl + " -- " + preference + " -- " + exchange.name();  
     }
 
     @Override
-    public byte[] getBytes() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public void write(ByteArrayOutputStream baos, HashMap<String, Short> compressionTable) throws IOException {
+        super.write(baos, compressionTable);
+        byte[] n = exchange.toLabels(compressionTable, (short) baos.size());
         DataOutputStream dos = new DataOutputStream(baos);
-
-        try {
-            dos.write(super.getBytes());
-            byte[] n = exchange.toLabels();
-            dos.writeShort(2 + n.length);
-            dos.writeShort(preference);
-            dos.write(n);
-            dos.flush();
-
-            return baos.toByteArray();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        dos.writeShort(n.length + 2);
+        dos.writeShort(preference);
+        dos.flush();
+        baos.write(n);
     }
     
 }

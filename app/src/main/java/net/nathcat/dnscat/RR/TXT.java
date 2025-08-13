@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import com.google.common.base.Charsets;
@@ -40,25 +41,17 @@ public class TXT extends RR {
     
     @Override
     public String toString() {
-        return "TXT -- " + name.name + " -- " + cls + " -- " + ttl + " -- " + data;  
+        return "TXT -- " + name.name() + " -- " + cls + " -- " + ttl + " -- " + data;  
     }
 
     @Override
-    public byte[] getBytes() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public void write(ByteArrayOutputStream baos, HashMap<String, Short> compressionTable) throws IOException {
+        super.write(baos, compressionTable);
+        byte[] n = data.getBytes(Charsets.US_ASCII);
         DataOutputStream dos = new DataOutputStream(baos);
-
-        try {
-            dos.write(super.getBytes());
-            byte[] n = data.getBytes(Charsets.US_ASCII);
-            dos.writeShort(n.length);
-            dos.write(n);
-            dos.flush();
-
-            return baos.toByteArray();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        dos.writeShort(n.length);
+        dos.flush();
+        baos.write(n);
     }
+
 }
