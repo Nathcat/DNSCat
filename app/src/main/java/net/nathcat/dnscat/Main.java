@@ -49,9 +49,13 @@ public class Main {
                     rcode = Header.RCode.NOERROR;
                 }
 
-                byte[] reply = new Message(new Header(
+                Message rply = new Message(new Header(
                     msg.header.id, true, Header.Opcode.QUERY, true, false, false, false, rcode
-                ), new Question[0], answer, new RR[0], new RR[0]).getBytes();
+                ), new Question[0], answer, new RR[0], new RR[0]);
+
+                System.out.println("Replying with:\n" + rply.toString());
+                
+                byte[] reply = rply.getBytes();
 
                 DatagramPacket replyPacket = new DatagramPacket(reply, 0, reply.length, packet.getAddress(), packet.getPort());
                 replyPacket.setAddress(packet.getAddress());
