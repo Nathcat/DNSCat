@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 import net.nathcat.dnscat.Message.Header;
 import net.nathcat.dnscat.Message.Message;
@@ -37,9 +38,20 @@ public class Main {
                 
                 System.out.println(msg);
 
+                RR[] answer = new RR[0];
+                Header.RCode rcode = Header.RCode.NAMEERROR;
+
+                if (msg.questions[0].name.name().equals(DomainName.origin.name())) {
+                    answer = new RR[] {
+                        new net.nathcat.dnscat.RR.A(new DomainName("test.nathcat.net"), RR.Class.IN, 0, InetAddress.getByName("3.8.122.52"))
+                    };
+
+                    rcode = Header.RCode.NOERROR;
+                }
+
                 byte[] reply = new Message(new Header(
-                    msg.header.id, true, Header.Opcode.QUERY, true, false, false, false, Header.RCode.NAMEERROR
-                ), new Question[0], new RR[0], new RR[0], new RR[0]).getBytes();
+                    msg.header.id, true, Header.Opcode.QUERY, true, false, false, false, rcode
+                ), new Question[0], answer, new RR[0], new RR[0]).getBytes();
 
                 DatagramPacket replyPacket = new DatagramPacket(reply, 0, reply.length, packet.getAddress(), packet.getPort());
                 replyPacket.setAddress(packet.getAddress());
