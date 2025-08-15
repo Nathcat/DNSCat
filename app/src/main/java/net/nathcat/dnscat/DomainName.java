@@ -52,7 +52,6 @@ public class DomainName {
         ArrayList<Byte> list = new ArrayList<>();
         
         for (String label : labels) {
-            System.out.println("First label is " + label);
             list.add((byte) label.length());
             
             for (char c : label.toCharArray()) {
@@ -66,7 +65,6 @@ public class DomainName {
 
         ta[ta.length - 1] = 0;
 
-        System.out.println(Arrays.toString(ta));
         return ta;
     }
 
